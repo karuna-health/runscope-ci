@@ -2,8 +2,7 @@ FROM circleci/python
 
 USER root
 
-ADD requirements.txt /app/
-WORKDIR /app
+ADD requirements.txt /
 RUN pip install -r requirements.txt
 
-ADD app.py /app/runscope.py
+ADD app.py /runscope.py
