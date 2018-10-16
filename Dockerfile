@@ -4,4 +4,4 @@ ADD requirements.txt /app/
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-ADD app.py /app/
+ADD app.py /app/runscope.py
