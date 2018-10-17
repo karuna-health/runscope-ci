@@ -1,8 +1,20 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import sys
 import time
 import os
+from termcolor import colored
 
+COLORS = {
+    "pass": "green",
+    "fail": "red",
+}
+
+SYMBOLS = {
+    "pass": "✔",
+    "fail": "✖",
+}
 
 def main():
     trigger_url = sys.argv[1]
@@ -13,7 +25,7 @@ def main():
 
         test_runs = trigger_json.get("runs", [])
 
-        print "Started {} test runs.".format(len(test_runs))
+        print "Started {} test runs!".format(len(test_runs))
 
         results = {}
         while len(results.keys()) < len(test_runs):
@@ -23,8 +35,26 @@ def main():
                 test_run_id = run.get("test_run_id")
                 if not test_run_id in results:
                     result = _get_result(run)
-                    if result.get("result") in ["pass", "fail"]:
+                    if result and result.get("result") in ["pass", "fail"]:
                         results[test_run_id] = result
+                        print "{} {}/{} {}".format(
+                            colored(result['result'].upper(), COLORS[result['result']]),
+                            len(results),
+                            len(test_runs),
+                            colored('({})'.format(test_run_id), 'white', attrs=['dark']),
+                        )
+                        for request in result.get("requests"):
+                            if not request.get("url"):
+                                continue
+                            print "  {} {}".format(colored(request['method'], COLORS[request['result']]), colored(request['url'], 'white', attrs=['dark']))
+                            for assertion in request.get("assertions"):
+                                res = colored(SYMBOLS[assertion['result']], COLORS[assertion['result']])
+                                lhs = assertion['property'] or assertion['target_value']
+                                cmp = colored(assertion['comparison'], 'white', attrs=['bold'])
+                                print "    {res} {lhs} {cmp} {actual_value}".format(lhs=lhs, cmp=cmp, res=res, **assertion)
+                                if assertion['error']:
+                                    print "      {}".format(colored(assertion['error'], 'yellow', attrs=['bold']))
+
 
         pass_count = sum([r.get("result") == "pass" for r in results.values()])
         fail_count = sum([r.get("result") == "fail" for r in results.values()])
@@ -43,7 +73,7 @@ def _get_result(test_run):
         exit(1)
 
     API_TOKEN = os.environ["RUNSCOPE_ACCESS_TOKEN"]
-    
+
     opts = {
         "base_url": "https://api.runscope.com",
         "bucket_key": test_run.get("bucket_key"),
@@ -51,7 +81,6 @@ def _get_result(test_run):
         "test_run_id": test_run.get("test_run_id")
     }
     result_url = "{base_url}/buckets/{bucket_key}/tests/{test_id}/results/{test_run_id}".format(**opts)
-    print "Getting result: {}".format(result_url)
 
     headers = {
         "Authorization": "Bearer {}".format(API_TOKEN),
