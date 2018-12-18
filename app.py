@@ -6,6 +6,10 @@ import time
 import os
 from termcolor import colored
 
+# fix: https://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 COLORS = {
     "pass": "green",
     "fail": "red",
@@ -67,6 +71,7 @@ def main():
 
 
 def _get_result(test_run):
+    # ff7e8381-9d7e-434f-9838-85c4e01c52ea
     # generate Personal Access Token at https://www.runscope.com/applications
     if not "RUNSCOPE_ACCESS_TOKEN" in os.environ:
         print "Please set the environment variable RUNSCOPE_ACCESS_TOKEN. You can get an access token by going to https://www.runscope.com/applications"
