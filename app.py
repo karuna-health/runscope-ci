@@ -6,10 +6,6 @@ import time
 import os
 from termcolor import colored
 
-# fix: https://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 COLORS = {
     "pass": "green",
     "fail": "red",
@@ -53,9 +49,10 @@ def main():
                             print "  {} {}".format(colored(request['method'], COLORS[request['result']]), colored(request['url'], 'white', attrs=['dark']))
                             for assertion in request.get("assertions"):
                                 res = colored(SYMBOLS[assertion['result']], COLORS[assertion['result']])
-                                lhs = assertion['property'] or assertion['target_value']
+                                lhs = str(assertion['property'] or assertion['target_value']).decode()
                                 cmp = colored(assertion['comparison'], 'white', attrs=['bold'])
-                                print "    {res} {lhs} {cmp} {actual_value}".format(lhs=lhs, cmp=cmp, res=res, **assertion)
+                                actual_value = assertion['actual_value'].decode()
+                                print "    {res} {lhs} {cmp} {actual_value}".format(lhs=lhs, cmp=cmp, res=res, actual_value=actual_value)
                                 if assertion['error']:
                                     print "      {}".format(colored(assertion['error'], 'yellow', attrs=['bold']))
 
