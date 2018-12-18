@@ -49,9 +49,9 @@ def main():
                             print "  {} {}".format(colored(request['method'], COLORS[request['result']]), colored(request['url'], 'white', attrs=['dark']))
                             for assertion in request.get("assertions"):
                                 res = colored(SYMBOLS[assertion['result']], COLORS[assertion['result']])
-                                lhs = str(assertion['property'] or assertion['target_value']).decode()
+                                lhs = str(assertion['property'] or assertion['target_value']).encode('utf-8')
                                 cmp = colored(assertion['comparison'], 'white', attrs=['bold'])
-                                actual_value = str(assertion['actual_value']).decode()
+                                actual_value = assertion['actual_value'].encode('utf-8')
                                 print "    {res} {lhs} {cmp} {actual_value}".format(lhs=lhs, cmp=cmp, res=res, actual_value=actual_value)
                                 if assertion['error']:
                                     print "      {}".format(colored(assertion['error'], 'yellow', attrs=['bold']))
