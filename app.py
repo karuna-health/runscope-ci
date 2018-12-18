@@ -51,7 +51,7 @@ def main():
                                 res = colored(SYMBOLS[assertion['result']], COLORS[assertion['result']])
                                 lhs = str(assertion['property'] or assertion['target_value']).decode()
                                 cmp = colored(assertion['comparison'], 'white', attrs=['bold'])
-                                actual_value = assertion['actual_value'].decode()
+                                actual_value = str(assertion['actual_value']).decode()
                                 print "    {res} {lhs} {cmp} {actual_value}".format(lhs=lhs, cmp=cmp, res=res, actual_value=actual_value)
                                 if assertion['error']:
                                     print "      {}".format(colored(assertion['error'], 'yellow', attrs=['bold']))
