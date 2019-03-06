@@ -97,5 +97,5 @@ def _get_result(test_run):
 
 
 if __name__ == '__main__':
-    time.sleep(random.randint(30, 120))
+    time.sleep(random.randint(60, 120))
     main()
